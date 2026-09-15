@@ -3,157 +3,409 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Browser Emulator</title>
+  <title id="tabTitle">Joe</title>
+  <link id="tabIcon" rel="icon" href="data:,">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #12131c;
-      --panel-bg: #1e2030;
-      --input-bg: #2a2d43;
-      --accent: #89b4fa;
-      --text: #cdd6f4;
-      --border: #313244;
+      --bg: #09090b;
+      --card-bg: #121215;
+      --card-hover: #1c1c21;
+      --border: #27272a;
+      --text: #f4f4f5;
+      --text-muted: #a1a1aa;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { display: flex; flex-direction: column; height: 100vh; background: var(--bg-dark); color: var(--text); overflow: hidden; }
-
-    /* Browser Header & Toolbar */
-    .browser-header {
-      background: var(--panel-bg);
-      border-bottom: 1px solid var(--border);
-      padding: 8px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn {
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.2s;
-    }
-
-    .btn:hover { background: #363a57; }
-
-    .address-bar-container {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0 10px;
-    }
-
-    .address-bar-container input {
-      width: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      padding: 10px;
-      font-size: 14px;
-    }
-
-    /* Shortcut Bar */
-    .shortcuts {
-      display: flex;
-      gap: 8px;
-      padding-left: 2px;
-    }
-
-    .shortcut-chip {
-      background: var(--input-bg);
-      color: var(--accent);
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      cursor: pointer;
-      border: 1px solid var(--border);
-    }
-
-    .shortcut-chip:hover { background: #363a57; }
-
-    /* Main Viewport */
-    .viewport-container {
-      flex: 1;
-      position: relative;
-      background: #ffffff;
-    }
-
-    iframe {
+    body, html {
       width: 100%;
       height: 100%;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* Navigation Bar */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 40px;
+      background: rgba(9, 9, 11, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-item {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      color: #ffffff;
+    }
+
+    /* Content Containers */
+    .tab-content {
+      display: none;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 100px 20px 60px 20px;
+    }
+
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Hero & Search */
+    .hero-title {
+      font-size: 4rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-bottom: 40px;
+    }
+
+    .search-wrapper {
+      width: 100%;
+      max-width: 640px;
+      position: relative;
+    }
+
+    .search-wrapper i {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 18px 20px 18px 54px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: #fff;
+      font-size: 1.05rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: #3f3f46;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.03);
+    }
+
+    /* Apps Grid */
+    .grid-title {
+      width: 100%;
+      text-align: left;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+      width: 100%;
+    }
+
+    .app-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .app-card:hover {
+      background: var(--card-hover);
+      transform: translateY(-3px);
+      border-color: #3f3f46;
+    }
+
+    .app-card i {
+      font-size: 2rem;
+      color: #fff;
+    }
+
+    .app-card span {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* Settings Styling */
+    .settings-group {
+      width: 100%;
+      max-width: 600px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .settings-group h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .settings-group p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      background: #18181b;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    /* Fullscreen Viewport */
+    #viewportContainer {
+      display: none;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      background: #000;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      background: #121215;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+
+    .top-bar input {
+      flex: 1;
+      padding: 10px 16px;
+      background: #18181b;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      outline: none;
+    }
+
+    .top-bar button {
+      padding: 10px 16px;
+      background: #27272a;
       border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .viewport {
+      flex: 1;
+      border: none;
+      width: 100%;
+      height: 100%;
+      background: #fff;
     }
   </style>
 </head>
 <body>
 
-  <div class="browser-header">
-    <div class="toolbar">
-      <button class="btn" onclick="goBack()">&#129144;</button>
-      <button class="btn" onclick="goForward()">&#129146;</button>
-      <button class="btn" onclick="reloadFrame()">&#128472;</button>
-      
-      <div class="address-bar-container">
-        <input type="text" id="urlInput" placeholder="Search with DuckDuckGo or enter URL (e.g. wikipedia.org)..." />
-      </div>
-
-      <button class="btn" style="background: var(--accent); color: #111;" onclick="navigate()">Go</button>
+  <!-- Top Navigation -->
+  <nav id="mainNav">
+    <div class="brand" onclick="switchTab('home')">
+      Joe
     </div>
+    <ul class="nav-links">
+      <li class="nav-item active" onclick="switchTab('home')"><i class="fa-solid fa-house"></i> Home</li>
+      <li class="nav-item" onclick="switchTab('apps')"><i class="fa-solid fa-grid-2"></i> Apps</li>
+      <li class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-gear"></i> Settings</li>
+    </ul>
+  </nav>
 
-    <div class="shortcuts">
-      <span class="shortcut-chip" onclick="quickLoad('https://start.duckduckgo.com')">DuckDuckGo</span>
-      <span class="shortcut-chip" onclick="quickLoad('https://en.m.wikipedia.org')">Wikipedia</span>
-      <span class="shortcut-chip" onclick="quickLoad('https://archive.org')">Archive.org</span>
+  <!-- HOME TAB -->
+  <div id="home" class="tab-content active">
+    <h1 class="hero-title">JOE</h1>
+    <p class="hero-subtitle">Search anything freely</p>
+    
+    <div class="search-wrapper">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search the web or enter a URL..." autofocus />
     </div>
   </div>
 
-  <div class="viewport-container">
-    <iframe id="browserViewport" src="about:blank"></iframe>
+  <!-- APPS TAB -->
+  <div id="apps" class="tab-content">
+    <div class="grid-title">Web Applications</div>
+    <div class="grid">
+      <div class="app-card" onclick="launchUrl('https://google.com')">
+        <i class="fa-brands fa-google"></i>
+        <span>Google</span>
+      </div>
+      <div class="app-card" onclick="launchUrl('https://youtube.com')">
+        <i class="fa-brands fa-youtube" style="color: #ff0000;"></i>
+        <span>YouTube</span>
+      </div>
+      <div class="app-card" onclick="launchUrl('https://discord.com')">
+        <i class="fa-brands fa-discord" style="color: #5865f2;"></i>
+        <span>Discord</span>
+      </div>
+      <div class="app-card" onclick="launchUrl('https://github.com')">
+        <i class="fa-brands fa-github"></i>
+        <span>GitHub</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div id="settings" class="tab-content">
+    <div class="settings-group">
+      <h3>Tab Cloaker (Stealth Mode)</h3>
+      <p>Change how this tab looks in your browser history and tab bar.</p>
+      <select id="cloakerSelect" onchange="applyCloak(this.value)">
+        <option value="none">Default (Joe)</option>
+        <option value="google">Google Search</option>
+        <option value="drive">Google Drive</option>
+        <option value="classroom">Google Classroom</option>
+      </select>
+    </div>
+
+    <div class="settings-group">
+      <h3>Default Search Engine</h3>
+      <p>Choose which engine to use for search queries.</p>
+      <select id="engineSelect">
+        <option value="duckduckgo">DuckDuckGo</option>
+        <option value="bing">Bing</option>
+        <option value="google">Google</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- VIEWPORT CONTAINER -->
+  <div id="viewportContainer">
+    <div class="top-bar">
+      <input type="text" id="topNavInput" placeholder="Search or enter URL..." />
+      <button onclick="closeViewer()"><i class="fa-solid fa-xmark"></i> Close</button>
+    </div>
+    <iframe id="browserWindow" class="viewport" src="about:blank"></iframe>
   </div>
 
   <script>
-    const iframe = document.getElementById('browserViewport');
-    const input = document.getElementById('urlInput');
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
 
-    function navigate() {
-      let query = input.value.trim();
-      if (!query) return;
-
-      let targetUrl = query;
-      if (!query.includes('.') || query.includes(' ')) {
-        targetUrl = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(query);
-      } else if (!/^https?:\/\//i.test(targetUrl)) {
-        targetUrl = 'https://' + targetUrl;
+    function launchUrl(target) {
+      let url = target.trim();
+      
+      if (!url.includes('.') || url.includes(' ')) {
+        const selectedEngine = document.getElementById('engineSelect').value;
+        if (selectedEngine === 'bing') {
+          url = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
+        } else if (selectedEngine === 'google') {
+          url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+        } else {
+          url = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(url);
+        }
       }
 
-      iframe.src = '/proxy?url=' + encodeURIComponent(targetUrl);
+      document.getElementById('browserWindow').src = `/proxy?url=${encodeURIComponent(url)}`;
+      document.getElementById('topNavInput').value = url;
+      document.getElementById('viewportContainer').style.display = 'flex';
     }
 
-    function quickLoad(url) {
-      input.value = url;
-      navigate();
+    function closeViewer() {
+      document.getElementById('browserWindow').src = 'about:blank';
+      document.getElementById('viewportContainer').style.display = 'none';
     }
 
-    function goBack() { iframe.contentWindow.history.back(); }
-    function goForward() { iframe.contentWindow.history.forward(); }
-    function reloadFrame() { iframe.contentWindow.location.reload(); }
+    function applyCloak(value) {
+      const title = document.getElementById('tabTitle');
+      const icon = document.getElementById('tabIcon');
 
-    input.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') navigate();
+      if (value === 'google') {
+        title.innerText = 'Google';
+        icon.href = 'https://www.google.com/favicon.ico';
+      } else if (value === 'drive') {
+        title.innerText = 'My Drive - Google Drive';
+        icon.href = 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png';
+      } else if (value === 'classroom') {
+        title.innerText = 'Classes';
+        icon.href = 'https://ssl.gstatic.com/classroom/favicon.png';
+      } else {
+        title.innerText = 'Joe';
+        icon.href = 'data:,';
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') launchUrl(e.target.value);
+    });
+
+    document.getElementById('topNavInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') launchUrl(e.target.value);
     });
   </script>
 </body>
