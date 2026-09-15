@@ -1,13 +1,14 @@
 {
-  "name": "web-emulator",
+  "name": "joe-proxy",
   "version": "1.0.0",
-  "description": "Web Proxy Emulator",
+  "description": "Joe Web Proxy",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "express-http-proxy": "^2.0.0"
+    "@titaniumnetwork-dev/ultraviolet": "^3.0.5",
+    "@tomphttp/bare-server-node": "^2.0.3",
+    "express": "^4.19.2"
   }
 }
