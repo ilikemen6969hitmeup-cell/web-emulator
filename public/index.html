@@ -1,377 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title id="tabTitle">Joe</title>
-  <link id="tabIcon" rel="icon" href="data:,">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #09090b;
-      --card-bg: #121215;
-      --card-hover: #1c1c21;
-      --border: #27272a;
-      --text: #f4f4f5;
-      --text-muted: #a1a1aa;
-    }
+  <link id="tabIcon" rel="icon" href="data:," />
+  
+  <!-- Load Ultraviolet Core Scripts -->
+  <script src="/uv/uv.bundle.js"></script>
+  <script src="/uv/uv.config.js" onerror="console.warn('uv.config.js not found, using inline config fallback')"></script>
 
+  <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    body, html {
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Main Home Container */
+    .main-container {
       width: 100%;
-      height: 100%;
-      background-color: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
+      max-width: 650px;
+      padding: 20px;
+      text-align: center;
     }
 
-    /* Navigation Bar */
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 18px 40px;
-      background: rgba(9, 9, 11, 0.8);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .brand {
-      font-size: 1.4rem;
+    h1 {
+      font-size: 3rem;
       font-weight: 800;
-      letter-spacing: 0.15em;
-      color: #fff;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .options-row {
       display: flex;
-      align-items: center;
       gap: 10px;
-      cursor: pointer;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 24px;
-      list-style: none;
-    }
-
-    .nav-item {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: color 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-item:hover, .nav-item.active {
-      color: #ffffff;
-    }
-
-    /* Content Containers */
-    .tab-content {
-      display: none;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 100px 20px 60px 20px;
-    }
-
-    .tab-content.active {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    /* Hero & Search */
-    .hero-title {
-      font-size: 4rem;
-      font-weight: 800;
-      margin-bottom: 8px;
-      letter-spacing: -0.02em;
-    }
-
-    .hero-subtitle {
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      margin-bottom: 40px;
-    }
-
-    .search-wrapper {
-      width: 100%;
-      max-width: 640px;
-      position: relative;
-    }
-
-    .search-wrapper i {
-      position: absolute;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 1.1rem;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 18px 20px 18px 54px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      color: #fff;
-      font-size: 1.05rem;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    .search-input:focus {
-      border-color: #3f3f46;
-      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.03);
-    }
-
-    /* Apps Grid */
-    .grid-title {
-      width: 100%;
-      text-align: left;
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 20px;
-      color: var(--text-muted);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 16px;
-      width: 100%;
-    }
-
-    .app-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .app-card:hover {
-      background: var(--card-hover);
-      transform: translateY(-3px);
-      border-color: #3f3f46;
-    }
-
-    .app-card i {
-      font-size: 2rem;
-      color: #fff;
-    }
-
-    .app-card span {
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    /* Settings Styling */
-    .settings-group {
-      width: 100%;
-      max-width: 600px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-      margin-bottom: 20px;
-    }
-
-    .settings-group h3 {
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-    }
-
-    .settings-group p {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      margin-bottom: 16px;
+      justify-content: center;
+      margin-bottom: 15px;
     }
 
     select {
-      width: 100%;
-      padding: 12px 16px;
-      background: #18181b;
-      border: 1px solid var(--border);
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 8px 12px;
       border-radius: 8px;
-      color: #fff;
+      font-size: 14px;
       outline: none;
-      font-size: 0.95rem;
+      cursor: pointer;
     }
 
-    /* Fullscreen Viewport */
+    select:focus {
+      border-color: #38bdf8;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      background: #1e293b;
+      padding: 8px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #f8fafc;
+      padding: 10px 15px;
+      font-size: 16px;
+    }
+
+    .search-box button {
+      background: #38bdf8;
+      color: #0f172a;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .search-box button:hover {
+      background: #0ea5e9;
+    }
+
+    /* Fullscreen Viewport Overlay */
     #viewportContainer {
       display: none;
-      flex-direction: column;
-      width: 100vw;
-      height: 100vh;
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 1000;
-      background: #000;
+      width: 100vw;
+      height: 100vh;
+      background: #0f172a;
+      flex-direction: column;
+      z-index: 9999;
     }
 
-    .top-bar {
+    .top-nav {
       display: flex;
       align-items: center;
-      padding: 10px 20px;
-      background: #121215;
-      border-bottom: 1px solid var(--border);
-      gap: 12px;
+      gap: 10px;
+      padding: 10px 15px;
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
     }
 
-    .top-bar input {
+    .top-nav button {
+      background: #334155;
+      color: #f8fafc;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .top-nav button:hover {
+      background: #475569;
+    }
+
+    .top-nav input {
       flex: 1;
-      padding: 10px 16px;
-      background: #18181b;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: #fff;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 14px;
       outline: none;
     }
 
-    .top-bar button {
-      padding: 10px 16px;
-      background: #27272a;
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      cursor: pointer;
-      font-weight: 600;
+    .top-nav input:focus {
+      border-color: #38bdf8;
     }
 
-    .viewport {
+    iframe {
       flex: 1;
-      border: none;
       width: 100%;
       height: 100%;
-      background: #fff;
+      border: none;
+      background: #ffffff;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation -->
-  <nav id="mainNav">
-    <div class="brand" onclick="switchTab('home')">
-      Joe
-    </div>
-    <ul class="nav-links">
-      <li class="nav-item active" onclick="switchTab('home')"><i class="fa-solid fa-house"></i> Home</li>
-      <li class="nav-item" onclick="switchTab('apps')"><i class="fa-solid fa-grid-2"></i> Apps</li>
-      <li class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-gear"></i> Settings</li>
-    </ul>
-  </nav>
-
-  <!-- HOME TAB -->
-  <div id="home" class="tab-content active">
-    <h1 class="hero-title">JOE</h1>
-    <p class="hero-subtitle">Search anything freely</p>
+  <!-- Home View -->
+  <div class="main-container">
+    <h1>Joe Proxy</h1>
     
-    <div class="search-wrapper">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="searchInput" class="search-input" placeholder="Search the web or enter a URL..." autofocus />
-    </div>
-  </div>
+    <div class="options-row">
+      <select id="engineSelect">
+        <option value="google">Search: Google</option>
+        <option value="bing">Search: Bing</option>
+        <option value="duckduckgo">Search: DuckDuckGo</option>
+      </select>
 
-  <!-- APPS TAB -->
-  <div id="apps" class="tab-content">
-    <div class="grid-title">Web Applications</div>
-    <div class="grid">
-      <div class="app-card" onclick="launchUrl('https://google.com')">
-        <i class="fa-brands fa-google"></i>
-        <span>Google</span>
-      </div>
-      <div class="app-card" onclick="launchUrl('https://youtube.com')">
-        <i class="fa-brands fa-youtube" style="color: #ff0000;"></i>
-        <span>YouTube</span>
-      </div>
-      <div class="app-card" onclick="launchUrl('https://discord.com')">
-        <i class="fa-brands fa-discord" style="color: #5865f2;"></i>
-        <span>Discord</span>
-      </div>
-      <div class="app-card" onclick="launchUrl('https://github.com')">
-        <i class="fa-brands fa-github"></i>
-        <span>GitHub</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- SETTINGS TAB -->
-  <div id="settings" class="tab-content">
-    <div class="settings-group">
-      <h3>Tab Cloaker (Stealth Mode)</h3>
-      <p>Change how this tab looks in your browser history and tab bar.</p>
-      <select id="cloakerSelect" onchange="applyCloak(this.value)">
-        <option value="none">Default (Joe)</option>
-        <option value="google">Google Search</option>
+      <select onchange="applyCloak(this.value)">
+        <option value="default">Tab Cloak: Normal</option>
+        <option value="google">Google</option>
         <option value="drive">Google Drive</option>
         <option value="classroom">Google Classroom</option>
       </select>
     </div>
 
-    <div class="settings-group">
-      <h3>Default Search Engine</h3>
-      <p>Choose which engine to use for search queries.</p>
-      <select id="engineSelect">
-        <option value="duckduckgo">DuckDuckGo</option>
-        <option value="bing">Bing</option>
-        <option value="google">Google</option>
-      </select>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search the web or type a URL..." />
+      <button onclick="launchUrl(document.getElementById('searchInput').value)">Go</button>
     </div>
   </div>
 
-  <!-- VIEWPORT CONTAINER -->
+  <!-- Browser Overlay Viewport -->
   <div id="viewportContainer">
-    <div class="top-bar">
-      <input type="text" id="topNavInput" placeholder="Search or enter URL..." />
-      <button onclick="closeViewer()"><i class="fa-solid fa-xmark"></i> Close</button>
+    <div class="top-nav">
+      <button onclick="closeViewer()">❌ Close</button>
+      <input type="text" id="topNavInput" placeholder="URL or Search" />
+      <button onclick="launchUrl(document.getElementById('topNavInput').value)">Go</button>
     </div>
-    <iframe id="browserWindow" class="viewport" src="about:blank"></iframe>
+    <iframe id="browserWindow" src="about:blank"></iframe>
   </div>
 
   <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      
-      document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
+    // Inline fallback for UV Config if uv.config.js is absent
+    if (typeof __uv$config === 'undefined') {
+      window.__uv$config = {
+        prefix: '/uv/service/',
+        bare: '/bare/',
+        encodeUrl: typeof Ultraviolet !== 'undefined' ? Ultraviolet.codec.xor.encode : (str) => encodeURIComponent(str),
+        decodeUrl: typeof Ultraviolet !== 'undefined' ? Ultraviolet.codec.xor.decode : (str) => decodeURIComponent(str),
+        handler: '/uv/uv.handler.js',
+        client: '/uv/uv.client.js',
+        bundle: '/uv/uv.bundle.js',
+        config: '/uv/uv.config.js',
+        sw: '/uv/uv.sw.js',
+      };
+    }
+
+    // Register Service Worker on load
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/uv/uv.sw.js', {
+          scope: __uv$config.prefix
+        }).then(() => {
+          console.log('Ultraviolet Service Worker Registered');
+        }).catch((err) => {
+          console.error('Service Worker Registration Failed:', err);
+        });
+      });
     }
 
     function launchUrl(target) {
+      if (!target) return;
       let url = target.trim();
-      
-      if (!url.includes('.') || url.includes(' ')) {
-        const selectedEngine = document.getElementById('engineSelect').value;
-        if (selectedEngine === 'bing') {
-          url = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
-        } else if (selectedEngine === 'google') {
-          url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+
+      // Ensure URL protocol or format search engine URL
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        if (url.includes('.') && !url.includes(' ')) {
+          url = 'https://' + url;
         } else {
-          url = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(url);
+          const selectedEngine = document.getElementById('engineSelect').value;
+          if (selectedEngine === 'bing') {
+            url = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
+          } else if (selectedEngine === 'duckduckgo') {
+            url = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(url);
+          } else {
+            url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+          }
         }
       }
 
-      document.getElementById('browserWindow').src = `/proxy?url=${encodeURIComponent(url)}`;
+      // Encode URL and open iframe overlay
+      const encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
+      document.getElementById('browserWindow').src = encodedUrl;
       document.getElementById('topNavInput').value = url;
       document.getElementById('viewportContainer').style.display = 'flex';
     }
@@ -400,6 +282,7 @@
       }
     }
 
+    // Enter Key Listeners
     document.getElementById('searchInput').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') launchUrl(e.target.value);
     });
@@ -407,89 +290,6 @@
     document.getElementById('topNavInput').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') launchUrl(e.target.value);
     });
-  <script>
-  let swReady = false;
-
-  // Register Service Worker and wait until it's active
-  async function initServiceWorker() {
-    if ('serviceWorker' in navigator) {
-      try {
-        const registration = await navigator.serviceWorker.register('/uv/uv.sw.js', {
-          scope: __uv$config.prefix
-        });
-        await navigator.serviceWorker.ready;
-        swReady = true;
-        console.log('Ultraviolet SW Ready');
-      } catch (err) {
-        console.error('Service Worker registration failed:', err);
-      }
-    }
-  }
-  
-  initServiceWorker();
-
-  async function launchUrl(target) {
-    if (!target) return;
-    let url = target.trim();
-    
-    // Ensure SW is ready before launching
-    if (!swReady) {
-      await initServiceWorker();
-    }
-
-    // Format search query vs direct URL
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      if (url.includes('.') && !url.includes(' ')) {
-        url = 'https://' + url;
-      } else {
-        const selectedEngine = document.getElementById('engineSelect')?.value || 'google';
-        if (selectedEngine === 'bing') {
-          url = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
-        } else if (selectedEngine === 'duckduckgo') {
-          url = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(url);
-        } else {
-          url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
-        }
-      }
-    }
-
-    const encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
-    document.getElementById('browserWindow').src = encodedUrl;
-    document.getElementById('topNavInput').value = url;
-    document.getElementById('viewportContainer').style.display = 'flex';
-  }
-
-  function closeViewer() {
-    document.getElementById('browserWindow').src = 'about:blank';
-    document.getElementById('viewportContainer').style.display = 'none';
-  }
-
-  function applyCloak(value) {
-    const title = document.getElementById('tabTitle');
-    const icon = document.getElementById('tabIcon');
-
-    if (value === 'google') {
-      title.innerText = 'Google';
-      icon.href = 'https://www.google.com/favicon.ico';
-    } else if (value === 'drive') {
-      title.innerText = 'My Drive - Google Drive';
-      icon.href = 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png';
-    } else if (value === 'classroom') {
-      title.innerText = 'Classes';
-      icon.href = 'https://ssl.gstatic.com/classroom/favicon.png';
-    } else {
-      title.innerText = 'Joe';
-      icon.href = 'data:,';
-    }
-  }
-
-  document.getElementById('searchInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') launchUrl(e.target.value);
-  });
-
-  document.getElementById('topNavInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') launchUrl(e.target.value);
-  });
-  <script>
+  </script>
 </body>
 </html>
