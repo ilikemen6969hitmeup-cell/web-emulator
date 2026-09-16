@@ -1,21 +1,17 @@
-import express from 'express';
-import { createBareServer } from '@tomphttp/bare-server-node';
-import { uvPath } from '@titaniumnetwork-dev/ultraviolet';
-import http from 'node:http';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const http = require('node:http');
+const path = require('node:path');
+const { createBareServer } = require('@tomphttp/bare-server-node');
+const { uvPath } = require('@titaniumnetwork-dev/ultraviolet');
 
 const app = express();
 const server = http.createServer();
 const bareServer = createBareServer('/bare/');
 
-// Serve static Ultraviolet files from npm package
+// Serve static Ultraviolet core library
 app.use('/uv/', express.static(uvPath));
 
-// Direct config route so __uv$config is NEVER undefined
+// Ensure __uv$config is always injected correctly
 app.get('/uv/uv.config.js', (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.send(`
@@ -33,10 +29,10 @@ app.get('/uv/uv.config.js', (req, res) => {
   `);
 });
 
-// Serve frontend files
+// Serve frontend assets
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route Bare Server traffic
+// Intercept Bare server routing
 server.on('request', (req, res) => {
   if (bareServer.shouldRoute(req)) {
     bareServer.routeRequest(req, res);
@@ -55,5 +51,5 @@ server.on('upgrade', (req, socket, head) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen({ port: PORT }, () => {
-  console.log(`Server live on port ${PORT}`);
+  console.log(`Server live on http://localhost:${PORT}`);
 });
