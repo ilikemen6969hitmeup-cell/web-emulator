@@ -407,6 +407,89 @@
     document.getElementById('topNavInput').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') launchUrl(e.target.value);
     });
-  </script>
+  <script>
+  let swReady = false;
+
+  // Register Service Worker and wait until it's active
+  async function initServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.register('/uv/uv.sw.js', {
+          scope: __uv$config.prefix
+        });
+        await navigator.serviceWorker.ready;
+        swReady = true;
+        console.log('Ultraviolet SW Ready');
+      } catch (err) {
+        console.error('Service Worker registration failed:', err);
+      }
+    }
+  }
+  
+  initServiceWorker();
+
+  async function launchUrl(target) {
+    if (!target) return;
+    let url = target.trim();
+    
+    // Ensure SW is ready before launching
+    if (!swReady) {
+      await initServiceWorker();
+    }
+
+    // Format search query vs direct URL
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      if (url.includes('.') && !url.includes(' ')) {
+        url = 'https://' + url;
+      } else {
+        const selectedEngine = document.getElementById('engineSelect')?.value || 'google';
+        if (selectedEngine === 'bing') {
+          url = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
+        } else if (selectedEngine === 'duckduckgo') {
+          url = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(url);
+        } else {
+          url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+        }
+      }
+    }
+
+    const encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
+    document.getElementById('browserWindow').src = encodedUrl;
+    document.getElementById('topNavInput').value = url;
+    document.getElementById('viewportContainer').style.display = 'flex';
+  }
+
+  function closeViewer() {
+    document.getElementById('browserWindow').src = 'about:blank';
+    document.getElementById('viewportContainer').style.display = 'none';
+  }
+
+  function applyCloak(value) {
+    const title = document.getElementById('tabTitle');
+    const icon = document.getElementById('tabIcon');
+
+    if (value === 'google') {
+      title.innerText = 'Google';
+      icon.href = 'https://www.google.com/favicon.ico';
+    } else if (value === 'drive') {
+      title.innerText = 'My Drive - Google Drive';
+      icon.href = 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png';
+    } else if (value === 'classroom') {
+      title.innerText = 'Classes';
+      icon.href = 'https://ssl.gstatic.com/classroom/favicon.png';
+    } else {
+      title.innerText = 'Joe';
+      icon.href = 'data:,';
+    }
+  }
+
+  document.getElementById('searchInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') launchUrl(e.target.value);
+  });
+
+  document.getElementById('topNavInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') launchUrl(e.target.value);
+  });
+  <script>
 </body>
 </html>
