@@ -209,20 +209,26 @@
   </div>
 
   <script>
-    // Register Service Worker silently in the background
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/uv/uv.sw.js', {
+    let swPromise = null;
+
+    // Register Service Worker and store initialization promise
+    function setupSW() {
+      if ('serviceWorker' in navigator) {
+        swPromise = navigator.serviceWorker.register('/uv/uv.sw.js', {
           scope: '/uv/service/'
-        }).catch(err => console.error('SW Error:', err));
-      });
+        }).then(() => navigator.serviceWorker.ready);
+      } else {
+        swPromise = Promise.reject('Service Workers not supported');
+      }
     }
 
-    function launchUrl(target) {
+    setupSW();
+
+    async function launchUrl(target) {
       if (!target) return;
       let url = target.trim();
 
-      // 1. Immediately switch UI to the browser overlay
+      // 1. Immediately switch UI to overlay
       document.getElementById('homeContainer').style.display = 'none';
       document.getElementById('viewportContainer').style.display = 'flex';
       document.getElementById('topNavInput').value = url;
@@ -243,17 +249,18 @@
         }
       }
 
-      // 3. Encode URL through Ultraviolet proxy prefix
+      // 3. Await Service Worker activation before updating iframe src
       try {
+        if (swPromise) await swPromise;
+
         if (typeof __uv$config !== 'undefined' && __uv$config.encodeUrl) {
           const encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
           document.getElementById('browserWindow').src = encodedUrl;
         } else {
           document.getElementById('browserWindow').src = '/proxy?url=' + encodeURIComponent(url);
         }
-      } catch (e) {
-        console.error('Encoding error:', e);
-        document.getElementById('browserWindow').src = url;
+      } catch (err) {
+        console.error('Proxy Error:', err);
       }
     }
 
