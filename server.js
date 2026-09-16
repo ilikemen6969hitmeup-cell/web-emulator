@@ -50,6 +50,7 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen({ port: PORT }, () => {
-  console.log(`Server live on http://localhost:${PORT}`);
+
+server.listen({ port: PORT, host: '0.0.0.0' }, () => {
+  console.log(`Server live on port ${PORT}`);
 });
