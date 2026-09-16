@@ -100,27 +100,33 @@
   </div>
 
   <script>
-    // Register Service Worker on boot
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/uv/uv.sw.js', {
-          scope: __uv$config.prefix
-        }).catch(err => console.error('SW Error:', err));
-      });
-    }
-
     async function launchUrl(target) {
       if (!target) return;
       let url = target.trim();
 
-      // Ensure SW is registered prior to navigation
-      if ('serviceWorker' in navigator) {
-        await navigator.serviceWorker.register('/uv/uv.sw.js', {
-          scope: __uv$config.prefix
-        });
+      // Check if config loaded cleanly
+      if (typeof window.__uv$config === 'undefined') {
+        alert("Ultraviolet configuration is missing. Ensure dependencies were installed with 'npm install'.");
+        return;
       }
 
-      // Format URL
+      // 1. Immediately transition UI
+      document.getElementById('homeContainer').style.display = 'none';
+      document.getElementById('viewportContainer').style.display = 'flex';
+      document.getElementById('topNavInput').value = url;
+
+      // 2. Register Service Worker safely
+      if ('serviceWorker' in navigator) {
+        try {
+          await navigator.serviceWorker.register('/uv/uv.sw.js', {
+            scope: window.__uv$config.prefix
+          });
+        } catch (err) {
+          console.error("SW Registration error:", err);
+        }
+      }
+
+      // 3. Process URL / Search query
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         if (url.includes('.') && !url.includes(' ')) {
           url = 'https://' + url;
@@ -136,12 +142,8 @@
         }
       }
 
-      // Display viewport and load encoded proxy URL
-      document.getElementById('homeContainer').style.display = 'none';
-      document.getElementById('viewportContainer').style.display = 'flex';
-      document.getElementById('topNavInput').value = url;
-      
-      document.getElementById('browserWindow').src = __uv$config.prefix + __uv$config.encodeUrl(url);
+      // 4. Update iframe source
+      document.getElementById('browserWindow').src = window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
     }
 
     function closeViewer() {
