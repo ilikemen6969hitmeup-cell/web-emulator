@@ -12,9 +12,12 @@ const app = express();
 const server = http.createServer();
 const bareServer = createBareServer('/bare/');
 
-// Dynamically serve uv.config.js so it is never missing
+// Serve static Ultraviolet files from npm package
+app.use('/uv/', express.static(uvPath));
+
+// Direct config route so __uv$config is NEVER undefined
 app.get('/uv/uv.config.js', (req, res) => {
-  res.type('application/javascript');
+  res.setHeader('Content-Type', 'application/javascript');
   res.send(`
     self.__uv$config = {
       prefix: '/uv/service/',
@@ -30,23 +33,10 @@ app.get('/uv/uv.config.js', (req, res) => {
   `);
 });
 
-// Serve Ultraviolet static files with Service Worker headers
-app.use('/uv/', express.static(uvPath, {
-  setHeaders: (res) => {
-    res.setHeader('Service-Worker-Allowed', '/');
-  }
-}));
-
-// Serve frontend static files
+// Serve frontend files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Fallback route to prevent "Cannot GET" errors
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/bare/')) return next();
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Route Bare Server HTTP requests
+// Route Bare Server traffic
 server.on('request', (req, res) => {
   if (bareServer.shouldRoute(req)) {
     bareServer.routeRequest(req, res);
@@ -55,7 +45,6 @@ server.on('request', (req, res) => {
   }
 });
 
-// Route Bare Server WebSockets
 server.on('upgrade', (req, socket, head) => {
   if (bareServer.shouldRoute(req)) {
     bareServer.routeUpgrade(req, socket, head);
@@ -66,5 +55,5 @@ server.on('upgrade', (req, socket, head) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen({ port: PORT }, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server live on port ${PORT}`);
 });
