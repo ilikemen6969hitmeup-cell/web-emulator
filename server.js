@@ -12,19 +12,13 @@ const app = express();
 const server = http.createServer();
 const bareServer = createBareServer('/bare/');
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve Ultraviolet node_modules static files FIRST
 app.use('/uv/', express.static(uvPath));
 
-// Fallback route for single-page routing
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/uv/') || req.path.startsWith('/bare/')) {
-    return next();
-  }
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// Serve public frontend files
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Handle HTTP requests via Bare Server
+// Route Bare Server HTTP requests
 server.on('request', (req, res) => {
   if (bareServer.shouldRoute(req)) {
     bareServer.routeRequest(req, res);
@@ -33,7 +27,7 @@ server.on('request', (req, res) => {
   }
 });
 
-// Handle WebSocket upgrades
+// Route Bare Server WebSockets
 server.on('upgrade', (req, socket, head) => {
   if (bareServer.shouldRoute(req)) {
     bareServer.routeUpgrade(req, socket, head);
@@ -44,5 +38,5 @@ server.on('upgrade', (req, socket, head) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen({ port: PORT }, () => {
-  console.log(`Joe Proxy running at http://localhost:${PORT}`);
+  console.log(`Joe running on http://localhost:${PORT}`);
 });
