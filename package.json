@@ -1,6 +1,7 @@
 {
-  "name": "joe-proxy",
+  "name": "anko-proxy",
   "version": "1.0.0",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -9,8 +10,5 @@
     "@titaniumnetwork-dev/ultraviolet": "^3.0.0",
     "@tomphttp/bare-server-node": "^2.0.1",
     "express": "^4.19.2"
-  },
-  "engines": {
-    "node": ">=18.0.0"
   }
 }
