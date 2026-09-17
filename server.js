@@ -1,9 +1,12 @@
 import express from 'express';
 import { createServer } from 'node:http';
 import { createBareServer } from '@tomphttp/bare-server-node';
-import { ultravioletPath } from '@titaniumnetwork-dev/ultraviolet';
+import ultraviolet from '@titaniumnetwork-dev/ultraviolet';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+// Extract static path safely from CommonJS module
+const ultravioletPath = ultraviolet.ultravioletPath || ultraviolet.uvPath;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
