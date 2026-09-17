@@ -1,46 +1,33 @@
-const express = require('express');
-const http = require('node:http');
-const path = require('node:path');
-const { createBareServer } = require('@tomphttp/bare-server-node');
-const { uvPath } = require('@titaniumnetwork-dev/ultraviolet');
+import express from 'express';
+import { createServer } from 'node:http';
+import { createBareServer } from '@tomphttp/bare-server-node';
+import { ultravioletPath } from '@titaniumnetwork-dev/ultraviolet';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const server = http.createServer();
+const server = createServer();
 const bareServer = createBareServer('/bare/');
 
-// Serve static Ultraviolet core library
-app.use('/uv/', express.static(uvPath));
-
-// Ensure __uv$config is always injected correctly
-app.get('/uv/uv.config.js', (req, res) => {
-  res.setHeader('Content-Type', 'application/javascript');
-  res.send(`
-    self.__uv$config = {
-      prefix: '/uv/service/',
-      bare: '/bare/',
-      encodeUrl: Ultraviolet.codec.xor.encode,
-      decodeUrl: Ultraviolet.codec.xor.decode,
-      handler: '/uv/uv.handler.js',
-      client: '/uv/uv.client.js',
-      bundle: '/uv/uv.bundle.js',
-      config: '/uv/uv.config.js',
-      sw: '/uv/uv.sw.js',
-    };
-  `);
-});
-
-// Serve frontend assets
+// Serve static frontend files (index.html, uv.config.js, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Intercept Bare server routing
-server.on('request', (req, res) => {
+// Serve official Ultraviolet static assets (uv.bundle.js, uv.sw.js) under /uv/
+app.use('/uv/', express.static(ultravioletPath));
+
+// Route HTTP proxy requests through the Bare server
+app.use((req, res, next) => {
   if (bareServer.shouldRoute(req)) {
     bareServer.routeRequest(req, res);
   } else {
-    app(req, res);
+    next();
   }
 });
 
+// Route WebSocket upgrade requests through the Bare server
 server.on('upgrade', (req, socket, head) => {
   if (bareServer.shouldRoute(req)) {
     bareServer.routeUpgrade(req, socket, head);
@@ -49,7 +36,12 @@ server.on('upgrade', (req, socket, head) => {
   }
 });
 
-const PORT = process.env.PORT || 10000;
-server.listen({ port: PORT, host: '0.0.0.0' }, () => {
-  console.log(`Server live on port ${PORT}`);
+// Attach Express app to HTTP server
+server.on('request', (req, res) => {
+  app(req, res);
+});
+
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log(`Anko proxy running on http://localhost:${PORT}`);
 });
