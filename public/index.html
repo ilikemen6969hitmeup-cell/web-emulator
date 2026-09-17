@@ -1,132 +1,443 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title id="tabTitle">Joe</title>
-  <link id="tabIcon" rel="icon" href="data:," />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="tabTitle">Anko Web</title>
+  <link id="tabIcon" rel="icon" href="data:,">
   
+  <!-- FontAwesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Ultraviolet Core Scripts (Required for Proxying) -->
   <script src="/uv/uv.bundle.js"></script>
   <script src="/uv/uv.config.js"></script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-      background-color: #000000;
+    :root {
+      --bg: #09090b;
+      --card-bg: #121215;
+      --card-hover: #1c1c21;
+      --border: #27272a;
+      --text: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --accent: #3b82f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation Bar */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 40px;
+      background: rgba(9, 9, 11, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-item {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-item:hover, .nav-item.active {
       color: #ffffff;
-      height: 100vh;
+    }
+
+    /* Container Tabs */
+    .tab-content {
+      display: none;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+
+    .tab-content.active {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      overflow: hidden;
     }
-    .main-container { width: 100%; max-width: 600px; padding: 24px; text-align: center; }
-    h1 { font-size: 3.2rem; font-weight: 800; letter-spacing: -0.05em; margin-bottom: 24px; color: #ffffff; }
-    .options-row { display: flex; gap: 12px; justify-content: center; margin-bottom: 16px; }
+
+    /* Hero Section */
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-bottom: 36px;
+    }
+
+    .search-wrapper {
+      width: 100%;
+      max-width: 640px;
+      position: relative;
+      margin-bottom: 50px;
+    }
+
+    .search-wrapper i {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 18px 20px 18px 54px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: #fff;
+      font-size: 1.05rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: #3f3f46;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.03);
+    }
+
+    /* Apps Grid */
+    .grid-title {
+      width: 100%;
+      text-align: left;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+      width: 100%;
+    }
+
+    .app-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .app-card:hover {
+      background: var(--card-hover);
+      transform: translateY(-3px);
+      border-color: #3f3f46;
+    }
+
+    .app-card i {
+      font-size: 2rem;
+      color: #fff;
+    }
+
+    .app-card span {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* Settings Panel */
+    .settings-group {
+      width: 100%;
+      max-width: 600px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .settings-group h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .settings-group p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
     select {
-      background: #09090b; color: #a1a1aa; border: 1px solid #27272a;
-      padding: 10px 14px; border-radius: 8px; font-size: 13px; outline: none; cursor: pointer;
+      width: 100%;
+      padding: 12px 16px;
+      background: #18181b;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      outline: none;
+      font-size: 0.95rem;
     }
-    select:hover, select:focus { border-color: #52525b; color: #ffffff; }
-    .search-box {
-      display: flex; gap: 8px; background: #09090b; padding: 6px;
-      border-radius: 12px; border: 1px solid #27272a; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.8);
-    }
-    .search-box input {
-      flex: 1; background: transparent; border: none; outline: none;
-      color: #ffffff; padding: 12px 16px; font-size: 15px;
-    }
-    .search-box input::placeholder { color: #52525b; }
-    .search-box button {
-      background: #ffffff; color: #000000; border: none; padding: 12px 24px;
-      border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer;
-    }
-    .search-box button:hover { background: #e4e4e7; }
+
+    /* Fullscreen Viewport Overlay */
     #viewportContainer {
-      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: #000000; flex-direction: column; z-index: 9999;
+      display: none;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      background: #000;
     }
-    .top-nav {
-      display: flex; align-items: center; gap: 12px; padding: 10px 16px;
-      background: #09090b; border-bottom: 1px solid #27272a;
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      background: #121215;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
     }
-    .top-nav button {
-      background: #18181b; color: #ffffff; border: 1px solid #27272a;
-      padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+
+    .top-bar input {
+      flex: 1;
+      padding: 10px 16px;
+      background: #18181b;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      outline: none;
     }
-    .top-nav button:hover { background: #27272a; }
-    .top-nav input {
-      flex: 1; background: #000000; border: 1px solid #27272a; color: #ffffff;
-      padding: 8px 14px; border-radius: 6px; font-size: 14px; outline: none;
+
+    .top-bar button {
+      padding: 10px 16px;
+      background: #27272a;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
     }
-    iframe { flex: 1; width: 100%; height: 100%; border: none; background: #ffffff; }
+
+    .top-bar button:hover {
+      background: #3f3f46;
+    }
+
+    .viewport {
+      flex: 1;
+      border: none;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+    }
   </style>
 </head>
 <body>
 
-  <div class="main-container" id="homeContainer">
-    <h1>Joe</h1>
-    
-    <div class="options-row">
-      <select id="engineSelect">
-        <option value="google">Search: Google</option>
-        <option value="bing">Search: Bing</option>
-        <option value="duckduckgo">Search: DuckDuckGo</option>
-      </select>
+  <!-- Top Navigation -->
+  <nav id="mainNav">
+    <div class="brand" onclick="switchTab('home')">
+      <i class="fa-solid fa-bolt"></i> ANKO
+    </div>
+    <ul class="nav-links">
+      <li class="nav-item active" onclick="switchTab('home')"><i class="fa-solid fa-house"></i> Home</li>
+      <li class="nav-item" onclick="switchTab('apps')"><i class="fa-solid fa-border-all"></i> Apps</li>
+      <li class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-gear"></i> Settings</li>
+    </ul>
+  </nav>
 
-      <select onchange="applyCloak(this.value)">
-        <option value="default">Tab Cloak: Normal</option>
-        <option value="google">Google</option>
+  <!-- HOME TAB -->
+  <div id="home" class="tab-content active">
+    <h1 class="hero-title">ANKO</h1>
+    <p class="hero-subtitle">Next-generation web proxy engine</p>
+    
+    <div class="search-wrapper">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search the web or enter a URL freely..." autofocus />
+    </div>
+
+    <div class="grid-title">Quick Access</div>
+    <div class="grid">
+      <div class="app-card" onclick="launchUrl('https://google.com')">
+        <i class="fa-brands fa-google"></i>
+        <span>Google</span>
+      </div>
+      <div class="app-card" onclick="launchUrl('https://youtube.com')">
+        <i class="fa-brands fa-youtube" style="color: #ff0000;"></i>
+        <span>YouTube</span>
+      </div>
+      <div class="app-card" onclick="launchUrl('https://discord.com')">
+        <i class="fa-brands fa-discord" style="color: #5865f2;"></i>
+        <span>Discord</span>
+      </div>
+      <div class="app-card" onclick="launchUrl('https://tiktok.com')">
+        <i class="fa-brands fa-tiktok"></i>
+        <span>TikTok</span>
+      </div>
+      <div class="app-card" onclick="launchUrl('https://reddit.com')">
+        <i class="fa-brands fa-reddit" style="color: #ff4500;"></i>
+        <span>Reddit</span>
+      </div>
+      <div class="app-card" onclick="launchUrl('https://twitch.tv')">
+        <i class="fa-brands fa-twitch" style="color: #9146ff;"></i>
+        <span>Twitch</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPS TAB -->
+  <div id="apps" class="tab-content">
+    <div class="grid-title">Web Applications</div>
+    <div class="grid">
+      <div class="app-card" onclick="launchUrl('https://github.com')">
+        <i class="fa-brands fa-github"></i>
+        <span>GitHub</span>
+      </div>
+      <div class="app-card" onclick="launchUrl('https://spotify.com')">
+        <i class="fa-brands fa-spotify" style="color: #1ed760;"></i>
+        <span>Spotify</span>
+      </div>
+      <div class="app-card" onclick="launchUrl('https://twitter.com')">
+        <i class="fa-brands fa-x-twitter"></i>
+        <span>X / Twitter</span>
+      </div>
+      <div class="app-card" onclick="launchUrl('https://wikipedia.org')">
+        <i class="fa-solid fa-globe"></i>
+        <span>Wikipedia</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div id="settings" class="tab-content">
+    <div class="settings-group">
+      <h3>Tab Cloaker (Stealth Mode)</h3>
+      <p>Change how this tab looks in your browser history and tab bar.</p>
+      <select id="cloakerSelect" onchange="applyCloak(this.value)">
+        <option value="none">Default (Anko)</option>
+        <option value="google">Google Search</option>
         <option value="drive">Google Drive</option>
         <option value="classroom">Google Classroom</option>
       </select>
     </div>
 
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search the web or type a URL..." />
-      <button onclick="launchUrl(document.getElementById('searchInput').value)">Go</button>
+    <div class="settings-group">
+      <h3>Default Search Engine</h3>
+      <p>Choose which engine to use for search queries.</p>
+      <select id="engineSelect">
+        <option value="duckduckgo">DuckDuckGo</option>
+        <option value="bing">Bing</option>
+        <option value="google">Google</option>
+      </select>
     </div>
   </div>
 
+  <!-- VIEWPORT CONTAINER -->
   <div id="viewportContainer">
-    <div class="top-nav">
-      <button onclick="closeViewer()">❌ Close</button>
-      <input type="text" id="topNavInput" placeholder="URL or Search" />
-      <button onclick="launchUrl(document.getElementById('topNavInput').value)">Go</button>
+    <div class="top-bar">
+      <input type="text" id="topNavInput" placeholder="Search or enter URL..." />
+      <button onclick="closeViewer()"><i class="fa-solid fa-xmark"></i> Close</button>
     </div>
-    <iframe id="browserWindow" src="about:blank"></iframe>
+    <iframe id="browserWindow" class="viewport" src="about:blank"></iframe>
   </div>
 
   <script>
+    // 1. Register the Ultraviolet Service Worker immediately on load
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          if (typeof window.__uv$config !== 'undefined') {
+            await navigator.serviceWorker.register('/uv/uv.sw.js', {
+              scope: window.__uv$config.prefix
+            });
+            console.log('Ultraviolet Service Worker registered.');
+          }
+        } catch (err) {
+          console.error('Service worker registration failed:', err);
+        }
+      });
+    }
+
+    // 2. Tab Navigation Logic
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      
+      const navItems = document.querySelectorAll('.nav-item');
+      if (tabId === 'home') navItems[0].classList.add('active');
+      if (tabId === 'apps') navItems[1].classList.add('active');
+      if (tabId === 'settings') navItems[2].classList.add('active');
+    }
+
+    // 3. Launch URL / Search via Ultraviolet
     async function launchUrl(target) {
       if (!target) return;
       let url = target.trim();
 
-      // Check if config loaded cleanly
       if (typeof window.__uv$config === 'undefined') {
-        alert("Ultraviolet configuration is missing. Ensure dependencies were installed with 'npm install'.");
+        alert("Ultraviolet configuration standard (uv.config.js) was not found.");
         return;
       }
 
-      // 1. Immediately transition UI
-      document.getElementById('homeContainer').style.display = 'none';
-      document.getElementById('viewportContainer').style.display = 'flex';
-      document.getElementById('topNavInput').value = url;
-
-      // 2. Register Service Worker safely
+      // Ensure service worker is active
       if ('serviceWorker' in navigator) {
-        try {
-          await navigator.serviceWorker.register('/uv/uv.sw.js', {
-            scope: window.__uv$config.prefix
-          });
-        } catch (err) {
-          console.error("SW Registration error:", err);
-        }
+        await navigator.serviceWorker.register('/uv/uv.sw.js', {
+          scope: window.__uv$config.prefix
+        });
+        await navigator.serviceWorker.ready;
       }
 
-      // 3. Process URL / Search query
+      // Format input: If search query, prepend chosen search engine
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         if (url.includes('.') && !url.includes(' ')) {
           url = 'https://' + url;
@@ -134,24 +445,27 @@
           const selectedEngine = document.getElementById('engineSelect').value;
           if (selectedEngine === 'bing') {
             url = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
-          } else if (selectedEngine === 'duckduckgo') {
-            url = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(url);
-          } else {
+          } else if (selectedEngine === 'google') {
             url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+          } else {
+            url = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(url);
           }
         }
       }
 
-      // 4. Update iframe source
+      // Display viewport and load encoded URL in iframe
+      document.getElementById('viewportContainer').style.display = 'flex';
+      document.getElementById('topNavInput').value = url;
       document.getElementById('browserWindow').src = window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
     }
 
+    // 4. Close Viewport Modal
     function closeViewer() {
       document.getElementById('browserWindow').src = 'about:blank';
       document.getElementById('viewportContainer').style.display = 'none';
-      document.getElementById('homeContainer').style.display = 'block';
     }
 
+    // 5. Tab Cloaking (Stealth Mode)
     function applyCloak(value) {
       const title = document.getElementById('tabTitle');
       const icon = document.getElementById('tabIcon');
@@ -166,11 +480,12 @@
         title.innerText = 'Classes';
         icon.href = 'https://ssl.gstatic.com/classroom/favicon.png';
       } else {
-        title.innerText = 'Joe';
+        title.innerText = 'Anko Web';
         icon.href = 'data:,';
       }
     }
 
+    // 6. Keypress Listeners for Enter Key
     document.getElementById('searchInput').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') launchUrl(e.target.value);
     });
